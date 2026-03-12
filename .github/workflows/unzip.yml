@@ -1,0 +1,27 @@
+name: Unzip my file
+on:
+  push:
+    paths:
+      - '*.zip'  # Spustí se jen když změníš/přidáš ZIP
+
+jobs:
+  unzip_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Unzip file
+        run: |
+          mkdir -p extracted_content
+          unzip -o "*.zip" -d extracted_content
+          # Odstraníme zip, aby v nové větvi nepřekážel
+          rm *.zip
+
+      - name: Deploy extracted content to branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: extracted_content
+          branch: rozbaleno # Sem se uloží rozbalené soubory
+          token: ${{ secrets.MY_GITHUB_TOKEN }}
+          
